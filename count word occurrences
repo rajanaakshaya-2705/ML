@@ -1,6 +1,9 @@
- words = file.read().lower().split()
-word_count = {word: words.count(word) for word in set(words)}
-print(word_count)
-
-
-
+with open("input.txt", "r") as file:
+    words = file.read().lower().split()
+d={}
+for i in words:
+    if i in d:
+        d[i]+=1 
+    else:
+        d[i]=1
+print(d)
