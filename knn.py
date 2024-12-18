@@ -1,63 +1,29 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-# Load dataset
-data = pd.read_csv("data/spam.csv", encoding='latin-1')
-data = data[['v1', 'v2']]  # Select relevant columns
-data.columns = ['label', 'text']  # Rename columns
-
-# Preprocess data
-data['label'] = data['label'].map({'ham': 0, 'spam': 1})  # Convert labels to binary
-X = data['text']
-y = data['label']
-
-# Convert text data to TF-IDF features
-vectorizer = TfidfVectorizer(stop_words='english')
-X_tfidf = vectorizer.fit_transform(X)
-
-# Split data into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X_tfidf, y, test_size=0.2, random_state=42)
-
-# Train k-NN model
-k = 5  # Number of neighbors
-knn_model = KNeighborsClassifier(n_neighbors=k)
-knn_model.fit(X_train, y_train)
-
-# Predict on test data
-y_pred = knn_model.predict(X_test)
-
-# Evaluate model
-accuracy = accuracy_score(y_test, y_pred)
-precision = precision_score(y_test, y_pred)
-recall = recall_score(y_test, y_pred)
-f1 = f1_score(y_test, y_pred)
-conf_matrix = confusion_matrix(y_test, y_pred)
-
-print(f'Confusion Matrix:\n{conf_matrix}\n')
-print(f'Accuracy: {accuracy}')
-print(f'Precision: {precision}')
-print(f'Recall: {recall}')
-print(f'F1 Score: {f1}')
-
-# Plot confusion matrix
-plt.figure(figsize=(8, 6))
-sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', xticklabels=['Ham', 'Spam'], yticklabels=['Ham', 'Spam'])
-plt.xlabel('Predicted')
-plt.ylabel('Actual')
-plt.title('Confusion Matrix')
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+df = pd.read_csv("/content/spam.csv",encoding='ISO-8859-1')
+X = df['v2'].values  
+y = df['v1'].values  
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+cv = CountVectorizer()
+X_train = cv.fit_transform(X_train)  # Fit and transform the training data
+X_test = cv.transform(X_test)        # Only transform
+knn_classifier = KNeighborsClassifier(n_neighbors=5)
+knn_classifier.fit(X_train, y_train)
+y_predict_knn = knn_classifier.predict(X_test)
+print("K-Nearest Neighbors (KNN) Classification Report:")
+print(classification_report(y_test, y_predict_knn))
+knn_accuracy = accuracy_score(y_test, y_predict_knn)
+print(f"KNN Accuracy: {knn_accuracy:.2f}")
+cm_knn = confusion_matrix(y_test, y_predict_knn, labels=['ham', 'spam'])
+disp_knn = ConfusionMatrixDisplay(confusion_matrix=cm_knn, display_labels=['ham', 'spam'])
+disp_knn.plot(cmap=plt.cm.Blues)
+plt.title("K-Nearest Neighbors (KNN) - Confusion Matrix")
 plt.show()
-
-# Plot evaluation metrics
-metrics = {'Accuracy': accuracy, 'Precision': precision, 'Recall': recall, 'F1 Score': f1}
-plt.figure(figsize=(8, 6))
-plt.bar(metrics.keys(), metrics.values(), color=['blue', 'green', 'orange', 'purple'])
-plt.xlabel('Metrics')
-plt.ylabel('Score')
-plt.title('Evaluation Metrics')
-plt.ylim(0, 1)
+plt.figure(figsize=(6, 6))
+pd.Series(y_predict_knn).value_counts().plot(kind='pie', autopct='%1.0f%%', colors=["#66c2a5", "#fc8d62"])
+plt.title("K-Nearest Neighbors (KNN) - Spam vs Ham Prediction Distribution")
+plt.ylabel('')
 plt.show()
