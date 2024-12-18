@@ -1,0 +1,6 @@
+ words = file.read().lower().split()
+word_count = {word: words.count(word) for word in set(words)}
+print(word_count)
+
+
+
