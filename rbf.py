@@ -6,7 +6,7 @@ from sklearn.metrics import accuracy_score
 X, y = make_classification(
     n_samples=100,
     n_features=2,
-    n_classes=4,  # Reduced to meet constraints
+    n_classes=4,  
     n_informative=2,
     n_redundant=0,
     n_repeated=0,
