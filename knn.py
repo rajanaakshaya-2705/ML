@@ -1,9 +1,10 @@
 import pandas as pd
+import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
-df = pd.read_csv("/content/spam.csv",encoding='ISO-8859-1')
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score,ConfusionMatrixDisplay
+df = pd.read_csv("C:\\Users\\AKSHAYA\\Downloads\\spam (1).csv",encoding='ISO-8859-1')
 X = df['v2'].values  
 y = df['v1'].values  
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
